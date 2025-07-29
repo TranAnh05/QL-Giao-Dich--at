@@ -5,8 +5,9 @@ import java.time.LocalDate;
 public class LandTransaction extends Transaction {
     private String landType;
 
-    public LandTransaction(String transactionId, LocalDate transactionDate, double unitPrice, double area, String landType) {
-        super(transactionId, transactionDate, unitPrice, area);
+    public LandTransaction(String transactionId, LocalDate transactionDate, double unitPrice, double area,
+            String transactionType, String landType) {
+        super(transactionId, transactionDate, unitPrice, area, transactionType);
         this.landType = landType;
     }
 

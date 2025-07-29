@@ -6,13 +6,15 @@ public class HouseTransaction extends Transaction {
     private String houseType; 
     private String address;
 
-    public HouseTransaction(String transactionId, LocalDate transactionDate, double unitPrice, double area, String houseType, String address) {
-        super(transactionId, transactionDate, unitPrice, area);
+    
+   
+    public HouseTransaction(String transactionId, LocalDate transactionDate, double unitPrice, double area,
+            String transactionType, String houseType, String address) {
+        super(transactionId, transactionDate, unitPrice, area, transactionType);
         this.houseType = houseType;
         this.address = address;
     }
 
-   
     public String getHouseType() {
         return houseType;
     }
