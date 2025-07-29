@@ -2,6 +2,10 @@ package presentation;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import business.TransactionViewItem;
+import business.TransactionViewModel;
+
 import java.awt.*;
 
 public class TransactionListViewUI extends JFrame {
@@ -56,22 +60,20 @@ public class TransactionListViewUI extends JFrame {
     }
 
      
-    // public void showList(TransactionListViewModel transactionViewModel) {
-    //     // Xóa tất cả các hàng hiện có trong bảng
-    //     model.setRowCount(0);
+    public void showList(TransactionViewModel transactionViewModel) {
+        model.setRowCount(0);
 
-    //     // Lặp qua danh sách giao dịch và thêm từng giao dịch vào bảng
-    //     for (TransactionViewItem item : transactionViewModel.transactionList) {
-    //         Object[] row = {
-    //                 item.stt,
-    //                 item.transactionId,
-    //                 item.transactionType,
-    //                 item.transactionDate,
-    //                 String.format("%,.0f", item.unitPrice), // Định dạng số cho dễ đọc
-    //                 item.area,
-    //                 String.format("%,.0f", item.totalPrice) // Định dạng số cho dễ đọc
-    //         };
-    //         model.addRow(row);
-    //     }
-    // }
+        for (TransactionViewItem item : transactionViewModel.transactionList) {
+            Object[] row = {
+                    item.stt,
+                    item.transactionId,
+                    item.transactionType,
+                    item.transactionDate,
+                    item.unitPrice,
+                    item.area,
+                    item.amountTotal
+            };
+            model.addRow(row);
+        }
+    }
 }

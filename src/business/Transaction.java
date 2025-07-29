@@ -18,45 +18,11 @@ public abstract class Transaction {
         this.transactionType = transactionType;
     }
 
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-    }
-
-    public LocalDate getTransactionDate() {
-        return transactionDate;
-    }
-
-    public void setTransactionDate(LocalDate transactionDate) {
-        this.transactionDate = transactionDate;
-    }
-
-    public double getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(double unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
-    public double getArea() {
-        return area;
-    }
-
-    public void setArea(double area) {
-        this.area = area;
-    }
-
-    public String getTransactionType() {
-        return transactionType;
-    }
-
-    public void setTransactionType(String transactionType) {
-        this.transactionType = transactionType;
-    }
+    public String getTransactionId() { return transactionId; }
+    public LocalDate getTransactionDate() { return transactionDate; };
+    public double getUnitPrice() { return unitPrice; }
+    public double getArea() { return area; }
+    public String getTransactionType() { return transactionType;}
 
     public abstract double calculateAmount();
 }

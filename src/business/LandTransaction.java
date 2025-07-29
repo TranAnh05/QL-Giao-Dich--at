@@ -6,20 +6,13 @@ public class LandTransaction extends Transaction {
     private String landType;
 
     public LandTransaction(String transactionId, LocalDate transactionDate, double unitPrice, double area,
-            String transactionType, String landType) {
-        super(transactionId, transactionDate, unitPrice, area, transactionType);
+            String landType) {
+        super(transactionId, transactionDate, unitPrice, area, "GDĐ");
         this.landType = landType;
     }
 
+    public String getLandType() { return landType; }
 
-    public String getLandType() {
-        return landType;
-    }
-
-    
-    public void setLandType(String landType) {
-        this.landType = landType;
-    }
 
     @Override
     public double calculateAmount() {
