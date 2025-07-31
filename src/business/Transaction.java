@@ -9,8 +9,7 @@ public abstract class Transaction {
     protected double area;
     protected String transactionType;
 
-    public Transaction(String transactionId, LocalDate transactionDate, double unitPrice, double area,
-            String transactionType) {
+    public Transaction(String transactionId, LocalDate transactionDate, double unitPrice, double area, String transactionType) {
         this.transactionId = transactionId;
         this.transactionDate = transactionDate;
         this.unitPrice = unitPrice;
@@ -18,11 +17,25 @@ public abstract class Transaction {
         this.transactionType = transactionType;
     }
 
-    public String getTransactionId() { return transactionId; }
-    public LocalDate getTransactionDate() { return transactionDate; };
-    public double getUnitPrice() { return unitPrice; }
-    public double getArea() { return area; }
-    public String getTransactionType() { return transactionType;}
+    public String getTransactionId() {
+        return transactionId;
+    }
 
-    public abstract double calculateAmount();
+    public LocalDate getTransactionDate() {
+        return transactionDate;
+    }
+
+    public double getUnitPrice() {
+        return unitPrice;
+    }
+
+    public double getArea() {
+        return area;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public abstract double calculateAmount(); // Phương thức trừu tượng
 }
