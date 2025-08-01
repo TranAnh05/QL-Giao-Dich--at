@@ -11,12 +11,14 @@ import persistence.TransactionDTO;
 public class TransactionListViewUseCase {
     private TransactionListViewDAO listViewDAO;
 
-    public TransactionListViewUseCase(TransactionListViewDAO listViewDAO) {
+    public TransactionListViewUseCase(TransactionListViewDAO listViewDAO) 
+    {
         // super();
         this.listViewDAO = listViewDAO;
     }
 
-    public List<TransactionViewItem> execute() throws SQLException, ParseException{
+    public List<TransactionViewItem> execute() throws SQLException, ParseException
+    {
         List<TransactionDTO> listDTO = null;
         List<Transaction> transactions  = null;
         
@@ -27,7 +29,8 @@ public class TransactionListViewUseCase {
         return convertToTransactionViewItem(transactions);
     }
 
-    private List<Transaction> convertToBusinessObjects(List<TransactionDTO> listDTO) {
+    private List<Transaction> convertToBusinessObjects(List<TransactionDTO> listDTO) 
+    {
         List<Transaction> transactions = new ArrayList<>();
 
         for(TransactionDTO dto : listDTO) {
@@ -53,7 +56,8 @@ public class TransactionListViewUseCase {
         return transactions;
     }
 
-    private List<TransactionViewItem> convertToTransactionViewItem(List<Transaction> transactions) {
+    private List<TransactionViewItem> convertToTransactionViewItem(List<Transaction> transactions) 
+    {
         List<TransactionViewItem> itemList = new ArrayList<TransactionViewItem>();
 
         int stt = 1;
@@ -71,5 +75,11 @@ public class TransactionListViewUseCase {
         }
 
         return itemList;
+    }
+    public List<TransactionViewItem> getTransactionsByType(String type) throws SQLException 
+    {
+        List<TransactionDTO> listDTO = listViewDAO.getTransactionsByType(type);
+        List<Transaction> transactions = convertToBusinessObjects(listDTO);
+        return convertToTransactionViewItem(transactions);
     }
 }
