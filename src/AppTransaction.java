@@ -15,10 +15,10 @@ public class AppTransaction {
         TransactionListViewUseCase listViewUseCase = null;
         TransactionSearchUseCase searchUseCase = null;
         TransactionUpdateUseCase updateUseCase = null;
-
         try {
             TransactionListViewDAO listDao = new TransactionListViewDAO();
-            // TransactionUpdateDAO updateDao = new TransactionUpdateDAO(listDao); // Truyền listDao
+            // TransactionUpdateDAO updateDao = new TransactionUpdateDAO(listDao); // Truyền
+            // listDao
             listViewUseCase = new TransactionListViewUseCase(listDao);
             searchUseCase = new TransactionSearchUseCase(listDao);
             updateUseCase = new TransactionUpdateUseCase(listDao);
