@@ -1,7 +1,8 @@
 package business;
 
 
-public class TransactionViewItem {
+public class TransactionViewItem 
+{
     public int stt;
     public String transactionId;
     public String transactionDate;

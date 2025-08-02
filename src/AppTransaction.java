@@ -7,8 +7,10 @@ import persistence.TransactionListViewDAO;
 import presentation.TransactionListViewController;
 import presentation.TransactionListViewUI;
 
-public class AppTransaction {
-    public static void main(String[] args) {
+public class AppTransaction 
+{
+    public static void main(String[] args) 
+    {
         TransactionListViewUI view = new TransactionListViewUI();
         TransactionViewModel model = null;
         TransactionListViewController controller = null;

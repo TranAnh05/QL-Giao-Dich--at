@@ -60,11 +60,14 @@ public class TransactionListViewUI extends JFrame {
     }
 
      
-    public void showList(TransactionViewModel transactionViewModel) {
+    public void showList(TransactionViewModel transactionViewModel) 
+    {
         model.setRowCount(0);
 
-        for (TransactionViewItem item : transactionViewModel.transactionList) {
-            Object[] row = {
+        for (TransactionViewItem item : transactionViewModel.transactionList) 
+        {
+            Object[] row = 
+            {
                     item.stt,
                     item.transactionId,
                     item.transactionType,

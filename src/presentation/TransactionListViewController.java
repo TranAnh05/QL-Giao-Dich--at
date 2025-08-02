@@ -18,11 +18,10 @@ public class TransactionListViewController {
         this.usecase = usecase;
     }
 
-    public void execute() throws SQLException, ParseException {
+    public void execute() throws SQLException, ParseException 
+    {
         transactionViewModel.transactionList = usecase.execute();
 
         view.showList(transactionViewModel);
     }
-
-    
 }
