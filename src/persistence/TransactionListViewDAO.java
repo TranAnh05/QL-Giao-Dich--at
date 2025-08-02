@@ -6,10 +6,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import business.TotalTransactionGateway;
+
 import java.sql.Statement;
 import java.time.LocalDate;
 
-public class TransactionListViewDAO {
+public class TransactionListViewDAO implements TotalTransactionGateway
+{
     private Connection conn;
 
     public TransactionListViewDAO() throws SQLException, ClassNotFoundException 
@@ -51,7 +55,7 @@ public class TransactionListViewDAO {
 
         return list;
     }
-    public List<TransactionDTO> getTransactionsByType(String type) throws SQLException 
+    public List<TransactionDTO> getTransactionsByType (String type) throws SQLException 
     {
         List<TransactionDTO> list = new ArrayList<>();
         Statement stmt = null;

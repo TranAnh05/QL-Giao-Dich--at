@@ -1,38 +1,42 @@
 package business;
 
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import business.entity.HouseTransaction;
 import business.entity.LandTransaction;
 import business.entity.Transaction;
-
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.ArrayList;
-
-import persistence.TransactionListViewDAO;
 import persistence.TransactionDTO;
+import persistence.TransactionListViewDAO;
 
-public class TransactionListViewUseCase 
+public class TotalTransactionUseCase
 {
-    private TransactionListViewDAO listViewDAO;
+    private TotalTransactionGateway gateway;
 
-    public TransactionListViewUseCase(TransactionListViewDAO listViewDAO) 
+    public TotalTransactionUseCase(TotalTransactionGateway gateway) 
     {
-        // super();
-        this.listViewDAO = listViewDAO;
+        this.gateway = gateway;
     }
 
-    public List<TransactionViewItem> execute() throws SQLException, ParseException
+    public List<TransactionViewItem> execute() throws SQLException, ParseException 
     {
-        List<TransactionDTO> listDTO = null;
-        List<Transaction> transactions  = null;
-        
-        listDTO = listViewDAO.getAll();
-
-        transactions = convertToBusinessObjects(listDTO);
-
+        List<TransactionDTO> listDTO = gateway.getAll();
+        List<Transaction> transactions = convertToBusinessObjects(listDTO);
         return convertToTransactionViewItem(transactions);
+    }
+
+    public List<TransactionViewItem> getTransactionsByType(String type) throws SQLException 
+    {
+        List<TransactionDTO> listDTO = gateway.getTransactionsByType(type);
+        List<Transaction> transactions = convertToBusinessObjects(listDTO);
+        return convertToTransactionViewItem(transactions);
+    }
+    public int countTransactionsByType(String type) throws SQLException 
+    {
+        List<TransactionDTO> listDTO = gateway.getTransactionsByType(type);
+        return listDTO.size();
     }
 
     private List<Transaction> convertToBusinessObjects(List<TransactionDTO> listDTO) 
