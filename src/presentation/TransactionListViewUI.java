@@ -2,7 +2,7 @@ package presentation;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
+import java.util.List;
 import business.TransactionViewItem;
 import business.TransactionViewModel;
 import business.TransactionObserver;
@@ -45,7 +45,7 @@ public class TransactionListViewUI extends JFrame implements TransactionObserver
         topPanel.add(buttonPanel, BorderLayout.EAST);
         add(topPanel, BorderLayout.NORTH);
 
-        String[] cols = {"STT", "Mã GD", "Loại giao dịch", "Ngày giao dịch", "Đơn giá", "Diện tích", "Thành tiền"};
+        String[] cols = { "STT", "Mã GD", "Loại giao dịch", "Ngày giao dịch", "Đơn giá", "Diện tích", "Thành tiền" };
         model = new DefaultTableModel(cols, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -56,6 +56,7 @@ public class TransactionListViewUI extends JFrame implements TransactionObserver
         table = new JTable(model);
         table.setFillsViewportHeight(true);
         table.setRowHeight(25);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         add(new JScrollPane(table), BorderLayout.CENTER);
     }
 
@@ -64,13 +65,13 @@ public class TransactionListViewUI extends JFrame implements TransactionObserver
         if (transactionViewModel != null && transactionViewModel.transactionList != null) {
             for (TransactionViewItem item : transactionViewModel.transactionList) {
                 Object[] row = {
-                    item.stt,
-                    item.transactionId,
-                    item.transactionType,
-                    item.transactionDate,
-                    item.unitPrice,
-                    item.area,
-                    item.amountTotal
+                        item.stt,
+                        item.transactionId,
+                        item.transactionType,
+                        item.transactionDate,
+                        item.unitPrice,
+                        item.area,
+                        item.amountTotal
                 };
                 model.addRow(row);
             }
@@ -82,9 +83,11 @@ public class TransactionListViewUI extends JFrame implements TransactionObserver
     }
 
     @Override
-    public void update(java.util.Observable o, Object arg) {
-        if (arg instanceof TransactionViewModel) {
-            showList((TransactionViewModel) arg);
+    public void onTransactionUpdated(Object data) {
+        if (data instanceof List<?>) {
+            TransactionViewModel viewModel = new TransactionViewModel();
+            viewModel.transactionList = (List<TransactionViewItem>) data;
+            showList(viewModel);
         }
     }
 }

@@ -16,6 +16,6 @@ public class TransactionUpdateUseCase extends TransactionSubject {
     public void updateTransaction(String transactionId, TransactionDTO updatedDto) throws SQLException, ParseException {
         updatedDto.transactionId = transactionId;
         dao.updateTransaction(updatedDto);
-        notifyObservers();
+        notifyObservers(null); // Thông báo không cần dữ liệu cụ thể, chỉ báo hiệu cập nhật
     }
 }

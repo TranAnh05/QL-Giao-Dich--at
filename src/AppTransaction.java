@@ -1,9 +1,5 @@
-import business.TransactionListViewUseCase;
-import business.TransactionSearchUseCase;
-import business.TransactionUpdateUseCase;
-import business.TransactionViewModel;
-import persistence.TransactionListViewDAO;
-// import persistence.TransactionUpdateDAO;
+import business.*;
+import persistence.*;
 import presentation.TransactionListViewController;
 import presentation.TransactionListViewUI;
 
@@ -16,11 +12,11 @@ public class AppTransaction {
         TransactionSearchUseCase searchUseCase = null;
         TransactionUpdateUseCase updateUseCase = null;
         try {
-            TransactionListViewDAO listDao = new TransactionListViewDAO();
-            // TransactionUpdateDAO updateDao = new TransactionUpdateDAO(listDao); // Truyền
-            // listDao
-            listViewUseCase = new TransactionListViewUseCase(listDao);
-            searchUseCase = new TransactionSearchUseCase(listDao);
+            DBConnection dbConn = new DBConnection();
+            TransactionListViewDAO listDao = new TransactionListViewDAO(dbConn.getConnection());
+            TransactionFactory factory = new TransactionAbstractFactory();
+            listViewUseCase = new TransactionListViewUseCase(listDao, factory);
+            searchUseCase = new TransactionSearchUseCase(listDao, factory); // Cập nhật constructor
             updateUseCase = new TransactionUpdateUseCase(listDao);
             controller = new TransactionListViewController(view, model, listViewUseCase, searchUseCase, updateUseCase);
 

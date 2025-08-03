@@ -1,7 +1,6 @@
 package persistence;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,21 +8,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransactionListViewDAO {
+public class TransactionListViewDAO implements TransactionGateway {
     private Connection conn;
 
-    public TransactionListViewDAO() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            String username = "root";
-            String password = "Viet2005!"; // Cập nhật mật khẩu của bạn
-            String url = "jdbc:mysql://localhost:3306/transaction?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
-            conn = DriverManager.getConnection(url, username, password);
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
+    public TransactionListViewDAO(Connection conn) {
+        this.conn = conn;
     }
 
+    @Override
     public List<TransactionDTO> getAll() throws SQLException {
         List<TransactionDTO> list = new ArrayList<>();
         String sql = "SELECT id, date, unitPrice, area, transactionType, landType, houseType, address FROM transaction";
@@ -45,6 +37,7 @@ public class TransactionListViewDAO {
         return list;
     }
 
+    @Override
     public void updateTransaction(TransactionDTO dto) throws SQLException {
         String sql = "UPDATE transaction SET date = ?, unitPrice = ?, area = ?, transactionType = ?, landType = ?, houseType = ?, address = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -60,6 +53,7 @@ public class TransactionListViewDAO {
         }
     }
 
+    @Override
     public List<TransactionDTO> searchByKeyword(String keyword) throws SQLException {
         List<TransactionDTO> list = new ArrayList<>();
         String sql = "SELECT id, date, unitPrice, area, transactionType, landType, houseType, address FROM transaction WHERE id LIKE ? OR address LIKE ?";

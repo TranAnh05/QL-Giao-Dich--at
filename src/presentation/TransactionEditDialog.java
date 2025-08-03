@@ -1,47 +1,46 @@
 package presentation;
 
 import javax.swing.*;
-import java.awt.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+
 import persistence.TransactionDTO;
 
+import java.awt.*;
+import java.time.LocalDate;
+
 public class TransactionEditDialog extends JDialog {
-    private JTextField txtTransactionId;
-    private JTextField txtDate;
-    private JTextField txtUnitPrice;
-    private JTextField txtArea;
-    private JTextField txtTransactionType;
-    private JTextField txtLandType;
-    private JTextField txtHouseType;
-    private JTextField txtAddress;
+    private JTextField txtDate, txtUnitPrice, txtArea, txtTransactionType, txtLandType, txtHouseType, txtAddress;
     private JButton btnSave;
 
-    public TransactionEditDialog(Frame parent, String transactionId) {
-        super(parent, "Chỉnh sửa giao dịch", true);
-        setLayout(new GridLayout(9, 2));
-        add(new JLabel("Mã giao dịch:"));
-        txtTransactionId = new JTextField(transactionId);
-        txtTransactionId.setEditable(false);
-        add(txtTransactionId);
-        add(new JLabel("Ngày:"));
+    public TransactionEditDialog(JFrame parent, String transactionId) {
+        super(parent, "Sửa giao dịch: " + transactionId, true);
+        setLayout(new GridLayout(8, 2, 5, 5));
+        setSize(400, 300);
+        setLocationRelativeTo(parent);
+
+        add(new JLabel("Ngày giao dịch:"));
         txtDate = new JTextField();
         add(txtDate);
+
         add(new JLabel("Đơn giá:"));
         txtUnitPrice = new JTextField();
         add(txtUnitPrice);
+
         add(new JLabel("Diện tích:"));
         txtArea = new JTextField();
         add(txtArea);
+
         add(new JLabel("Loại giao dịch:"));
         txtTransactionType = new JTextField();
         add(txtTransactionType);
+
         add(new JLabel("Loại đất:"));
         txtLandType = new JTextField();
         add(txtLandType);
+
         add(new JLabel("Loại nhà:"));
         txtHouseType = new JTextField();
         add(txtHouseType);
+
         add(new JLabel("Địa chỉ:"));
         txtAddress = new JTextField();
         add(txtAddress);
@@ -50,11 +49,9 @@ public class TransactionEditDialog extends JDialog {
         add(btnSave);
         add(new JLabel());
 
-        pack();
-        setLocationRelativeTo(parent);
+        getRootPane().setDefaultButton(btnSave);
     }
 
-    public JTextField getTxtTransactionId() { return txtTransactionId; }
     public JTextField getTxtDate() { return txtDate; }
     public JTextField getTxtUnitPrice() { return txtUnitPrice; }
     public JTextField getTxtArea() { return txtArea; }
@@ -62,34 +59,21 @@ public class TransactionEditDialog extends JDialog {
     public JTextField getTxtLandType() { return txtLandType; }
     public JTextField getTxtHouseType() { return txtHouseType; }
     public JTextField getTxtAddress() { return txtAddress; }
+    public JButton getSaveButton() { return btnSave; }
 
-    public TransactionDTO getUpdatedDTO() {
+    public TransactionDTO getUpdatedDTO() throws NumberFormatException {
         TransactionDTO dto = new TransactionDTO();
-        dto.transactionId = txtTransactionId.getText();
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            dto.transactionDate = LocalDate.parse(txtDate.getText(), formatter);
+            dto.transactionDate = LocalDate.parse(getTxtDate().getText());
+            dto.unitPrice = Double.parseDouble(getTxtUnitPrice().getText());
+            dto.area = Double.parseDouble(getTxtArea().getText());
+            dto.transactionType = getTxtTransactionType().getText();
+            dto.landType = getTxtLandType().getText();
+            dto.houseType = getTxtHouseType().getText();
+            dto.address = getTxtAddress().getText();
         } catch (Exception e) {
-            dto.transactionDate = null;
+            throw new NumberFormatException("Dữ liệu nhập không hợp lệ: " + e.getMessage());
         }
-        try {
-            dto.unitPrice = Double.parseDouble(txtUnitPrice.getText());
-        } catch (Exception e) {
-            dto.unitPrice = null;
-        }
-        try {
-            dto.area = Double.parseDouble(txtArea.getText());
-        } catch (Exception e) {
-            dto.area = null;
-        }
-        dto.transactionType = txtTransactionType.getText();
-        dto.landType = txtLandType.getText();
-        dto.houseType = txtHouseType.getText();
-        dto.address = txtAddress.getText();
         return dto;
-    }
-
-    public JButton getSaveButton() {
-        return btnSave;
     }
 }
