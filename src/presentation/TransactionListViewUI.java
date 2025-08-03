@@ -2,49 +2,50 @@ package presentation;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
+import java.util.List;
 import business.TransactionViewItem;
 import business.TransactionViewModel;
+import business.TransactionObserver;
 
 import java.awt.*;
 
-public class TransactionListViewUI extends JFrame {
+public class TransactionListViewUI extends JFrame implements TransactionObserver {
     private JTextField txtSearch;
     private JButton btnAdd;
-    private JButton btnEdit; // Nút sửa
-    private JButton btnDelete; // Nút xóa
+    private JButton btnEdit;
+    private JButton btnDelete;
+    private JButton btnSearch;
     private JTable table;
     private DefaultTableModel model;
+    private TransactionListViewController controller;
 
     public TransactionListViewUI() {
-        // --- Cài đặt cho JFrame ---
         super("Quản lý danh sách giao dịch");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1000, 600); 
-        setLocationRelativeTo(null); 
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
 
-        // --- Panel Top: Chứa các nút chức năng và ô tìm kiếm ---
         JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+        txtSearch = new JTextField(20);
+        txtSearch.addActionListener(e -> controller.searchTransaction(txtSearch.getText()));
 
-        // Ô tìm kiếm
-        txtSearch = new JTextField();
-
-        // Panel cho các nút
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnAdd = new JButton("Thêm");
         btnEdit = new JButton("Sửa");
         btnDelete = new JButton("Xóa");
+        btnSearch = new JButton("Tìm kiếm");
+        btnSearch.addActionListener(e -> controller.searchTransaction(txtSearch.getText()));
+        btnEdit.addActionListener(e -> controller.editTransaction(table.getSelectedRow()));
         buttonPanel.add(btnAdd);
         buttonPanel.add(btnEdit);
         buttonPanel.add(btnDelete);
+        buttonPanel.add(btnSearch);
 
-        // Thêm các thành phần vào topPanel
         topPanel.add(txtSearch, BorderLayout.CENTER);
         topPanel.add(buttonPanel, BorderLayout.EAST);
-
-        // Thêm topPanel vào JFrame
         add(topPanel, BorderLayout.NORTH);
-        String[] cols = {"STT", "Mã GD", "Loại giao dịch", "Ngày giao dịch", "Đơn giá", "Diện tích", "Thành tiền"};
+
+        String[] cols = { "STT", "Mã GD", "Loại giao dịch", "Ngày giao dịch", "Đơn giá", "Diện tích", "Thành tiền" };
         model = new DefaultTableModel(cols, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -53,27 +54,40 @@ public class TransactionListViewUI extends JFrame {
         };
 
         table = new JTable(model);
-        table.setFillsViewportHeight(true); 
+        table.setFillsViewportHeight(true);
         table.setRowHeight(25);
-
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         add(new JScrollPane(table), BorderLayout.CENTER);
     }
 
-     
     public void showList(TransactionViewModel transactionViewModel) {
         model.setRowCount(0);
+        if (transactionViewModel != null && transactionViewModel.transactionList != null) {
+            for (TransactionViewItem item : transactionViewModel.transactionList) {
+                Object[] row = {
+                        item.stt,
+                        item.transactionId,
+                        item.transactionType,
+                        item.transactionDate,
+                        item.unitPrice,
+                        item.area,
+                        item.amountTotal
+                };
+                model.addRow(row);
+            }
+        }
+    }
 
-        for (TransactionViewItem item : transactionViewModel.transactionList) {
-            Object[] row = {
-                    item.stt,
-                    item.transactionId,
-                    item.transactionType,
-                    item.transactionDate,
-                    item.unitPrice,
-                    item.area,
-                    item.amountTotal
-            };
-            model.addRow(row);
+    public void setController(TransactionListViewController controller) {
+        this.controller = controller;
+    }
+
+    @Override
+    public void onTransactionUpdated(Object data) {
+        if (data instanceof List<?>) {
+            TransactionViewModel viewModel = new TransactionViewModel();
+            viewModel.transactionList = (List<TransactionViewItem>) data;
+            showList(viewModel);
         }
     }
 }

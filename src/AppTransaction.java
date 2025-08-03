@@ -1,31 +1,29 @@
-import java.sql.SQLException;
-import java.text.ParseException;
-
-import business.TransactionListViewUseCase;
-import business.TransactionViewModel;
-import persistence.TransactionListViewDAO;
+import business.*;
+import persistence.*;
 import presentation.TransactionListViewController;
 import presentation.TransactionListViewUI;
 
 public class AppTransaction {
     public static void main(String[] args) {
         TransactionListViewUI view = new TransactionListViewUI();
-        TransactionViewModel model = null;
+        TransactionViewModel model = new TransactionViewModel();
         TransactionListViewController controller = null;
         TransactionListViewUseCase listViewUseCase = null;
-
+        TransactionSearchUseCase searchUseCase = null;
+        TransactionUpdateUseCase updateUseCase = null;
         try {
-            TransactionListViewDAO transactionListViewDAO = new TransactionListViewDAO();
-            listViewUseCase = new TransactionListViewUseCase(transactionListViewDAO);
-            controller = new TransactionListViewController(view, model, listViewUseCase);
+            DBConnection dbConn = new DBConnection();
+            TransactionListViewDAO listDao = new TransactionListViewDAO(dbConn.getConnection());
+            TransactionFactory factory = new TransactionAbstractFactory();
+            listViewUseCase = new TransactionListViewUseCase(listDao, factory);
+            searchUseCase = new TransactionSearchUseCase(listDao, factory); // Cập nhật constructor
+            updateUseCase = new TransactionUpdateUseCase(listDao);
+            controller = new TransactionListViewController(view, model, listViewUseCase, searchUseCase, updateUseCase);
 
             controller.execute();
             view.setVisible(true);
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }
