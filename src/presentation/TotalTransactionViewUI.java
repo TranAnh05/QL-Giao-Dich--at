@@ -5,25 +5,24 @@ import javax.swing.table.DefaultTableModel;
 
 import business.TotalTransactionGateway;
 import business.TotalTransactionUseCase;
-import business.TransactionListViewUseCase;
 import business.TransactionViewItem;
 import business.TransactionViewModel;
 import persistence.TransactionListViewDAO;
+import persistence.DBConnection;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
 
-public class TotalTransactionViewUI extends JFrame
-{
+public class TotalTransactionViewUI extends JFrame {
     private JRadioButton landButton, houseButton;
     private JTable transactionTable;
     private DefaultTableModel model;
     private JTextField totalField;
     private TotalTransactionUseCase totalUseCase;
+    private TotalTransactionController controller;
 
-    public TotalTransactionViewUI(TotalTransactionUseCase totalUseCase) 
-    {
+    public TotalTransactionViewUI(TotalTransactionUseCase totalUseCase) {
         this.totalUseCase = totalUseCase;
         setTitle("Transaction Total Viewer");
         setSize(800, 400);
@@ -64,81 +63,47 @@ public class TotalTransactionViewUI extends JFrame
         bottomPanel.add(totalField);
         add(bottomPanel, BorderLayout.SOUTH);
 
+        // Khởi tạo controller với view và useCase
+        TransactionViewModel viewModel = new TransactionViewModel();
+        this.controller = new TotalTransactionController(this, viewModel, totalUseCase);
+
         // Sự kiện chọn loại giao dịch
-        landButton.addActionListener(e -> showLandTransactions());
-        houseButton.addActionListener(e -> showHouseTransactions());
+        landButton.addActionListener(e -> controller.loadTransactionsByType("GDĐ"));
+        houseButton.addActionListener(e -> controller.loadTransactionsByType("GDN"));
 
         setVisible(true);
     }
-    public void showList(TransactionViewModel viewModel, int total) 
-    {
+
+    public void showList(TransactionViewModel viewModel, int total) {
         model.setRowCount(0);
 
-        for (TransactionViewItem item : viewModel.transactionList) 
-        {
-            Vector<Object> row = new Vector<>();
-            row.add(item.stt);
-            row.add(item.transactionId);
-            row.add(item.transactionType);
-            row.add(item.transactionDate);
-            row.add(item.unitPrice);
-            row.add(item.area);
-            row.add(item.amountTotal);
+        if (viewModel != null && viewModel.transactionList != null) {
+            for (TransactionViewItem item : viewModel.transactionList) {
+                Vector<Object> row = new Vector<>();
+                row.add(item.stt);
+                row.add(item.transactionId);
+                row.add(item.transactionType);
+                row.add(item.transactionDate);
+                row.add(item.unitPrice);
+                row.add(item.area);
+                row.add(item.amountTotal);
 
-            model.addRow(row);
+                model.addRow(row);
+            }
         }
         totalField.setText(String.valueOf(total));
     }
 
-    private void showLandTransactions() 
-    {
-        try 
-        {
-            TransactionViewModel viewModel = new TransactionViewModel();
-            TransactionListViewUseCase useCase = new TransactionListViewUseCase(new persistence.TransactionListViewDAO());
-            TotalTransactionController controller = new TotalTransactionController(this, viewModel, totalUseCase);
-            controller.loadTransactionsByType("GDĐ"); // phân loại đúng giao dịch đất
-        } 
-        catch (Exception ex) 
-        {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải giao dịch đất: " + ex.getMessage());
-        }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                DBConnection dbConn = new DBConnection();
+                TotalTransactionGateway gateway = new TransactionListViewDAO(dbConn.getConnection());
+                TotalTransactionUseCase useCase = new TotalTransactionUseCase(gateway);
+                new TotalTransactionViewUI(useCase);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
-
-
-    private void showHouseTransactions() 
-    {
-        try 
-        {
-            TransactionViewModel viewModel = new TransactionViewModel();
-            TransactionListViewUseCase useCase = new TransactionListViewUseCase(new persistence.TransactionListViewDAO());
-            TotalTransactionController controller = new TotalTransactionController(this, viewModel, totalUseCase);
-
-            controller.loadTransactionsByType("GDN");
-        } 
-        catch (Exception ex) 
-        {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải giao dịch nhà: " + ex.getMessage());
-        }
-    }
-
-
-    public static void main(String[] args) 
-    {
-    SwingUtilities.invokeLater(() -> 
-    {
-        try 
-        {
-            TotalTransactionGateway gateway = new TransactionListViewDAO();
-            TotalTransactionUseCase useCase = new TotalTransactionUseCase(gateway);
-            new TotalTransactionViewUI(useCase);
-        } 
-        catch (Exception e) 
-        {
-            e.printStackTrace();
-        }
-    });
-}
 }

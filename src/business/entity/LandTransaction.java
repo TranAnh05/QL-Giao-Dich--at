@@ -13,13 +13,12 @@ public class LandTransaction extends Transaction {
 
     public String getLandType() { return landType; }
 
-
     @Override
     public double calculateAmount() {
         if ("A".equalsIgnoreCase(landType)) {
-            return area * unitPrice * 1.5;
+            return getArea() * getUnitPrice() * 1.5;
         } else if ("B".equalsIgnoreCase(landType) || "C".equalsIgnoreCase(landType)) {
-            return area * unitPrice;
+            return getArea() * getUnitPrice();
         } else {
            throw new IllegalArgumentException("Loại đất không hợp lệ: " + landType);
         }

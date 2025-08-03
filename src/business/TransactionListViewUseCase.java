@@ -1,5 +1,7 @@
 package business;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import business.entity.HouseTransaction;
@@ -8,78 +10,66 @@ import business.entity.Transaction;
 
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 
 import persistence.TransactionListViewDAO;
 import persistence.TransactionDTO;
 
-public class TransactionListViewUseCase 
-{
-    private TransactionListViewDAO listViewDAO;
 
-    public TransactionListViewUseCase(TransactionListViewDAO listViewDAO) 
-    {
-        // super();
+public class TransactionListViewUseCase extends TransactionSubject {
+
+    private TransactionListViewDAO listViewDAO;
+    private TransactionFactory factory;
+
+
+    public TransactionListViewUseCase(TransactionListViewDAO listViewDAO, TransactionFactory factory) {
         this.listViewDAO = listViewDAO;
+        this.factory = factory;
     }
 
-    public List<TransactionViewItem> execute() throws SQLException, ParseException
-    {
-        List<TransactionDTO> listDTO = null;
-        List<Transaction> transactions  = null;
-        
-        listDTO = listViewDAO.getAll();
 
-        transactions = convertToBusinessObjects(listDTO);
-
-        return convertToTransactionViewItem(transactions);
+    public List<TransactionViewItem> execute() throws SQLException, ParseException {
+        List<TransactionDTO> listDTO = listViewDAO.getAll();
+        List<Transaction> transactions = convertToBusinessObjects(listDTO);
+        List<TransactionViewItem> result = convertToTransactionViewItem(transactions);
+        notifyObservers(result); // Thông báo cho TransactionObserver
+        return result;
     }
 
     private List<Transaction> convertToBusinessObjects(List<TransactionDTO> listDTO) 
     {
         List<Transaction> transactions = new ArrayList<>();
-
-        for(TransactionDTO dto : listDTO) {
-            if("GDĐ".equalsIgnoreCase(dto.transactionType)) {
-                transactions.add(new LandTransaction(
-                    dto.transactionId, dto.transactionDate,
-                    dto.unitPrice != null ? dto.unitPrice : 0,
-                    dto.area != null ? dto.area : 0,
-                    dto.landType
-                ));
-            }
-            else if("GDN".equalsIgnoreCase(dto.transactionType)) {
-                transactions.add(new HouseTransaction(
-                    dto.transactionId, dto.transactionDate,
-                    dto.unitPrice != null ? dto.unitPrice : 0,
-                    dto.area != null ? dto.area : 0,
-                    dto.houseType,
-                    dto.address
-                ));
-            }
+        for (TransactionDTO dto : listDTO) {
+            transactions.add(factory.createTransaction(
+                dto.transactionId, dto.transactionDate,
+                dto.unitPrice != null ? dto.unitPrice : 0,
+                dto.area != null ? dto.area : 0,
+                dto.transactionType,
+                dto.transactionType.equals("GDĐ") ? dto.landType : dto.houseType,
+                dto.address
+            ));
         }
-
         return transactions;
     }
 
-    private List<TransactionViewItem> convertToTransactionViewItem(List<Transaction> transactions) 
-    {
-        List<TransactionViewItem> itemList = new ArrayList<TransactionViewItem>();
 
+    private List<TransactionViewItem> convertToTransactionViewItem(List<Transaction> transactions) {
+        List<TransactionViewItem> itemList = new ArrayList<>();
         int stt = 1;
-        for(Transaction transaction : transactions) {
+        DecimalFormat df = new DecimalFormat("#,###.##");
+        for (Transaction transaction : transactions) {
             TransactionViewItem item = new TransactionViewItem();
-
             item.stt = stt++;
             item.transactionId = transaction.getTransactionId();
             item.transactionDate = transaction.getTransactionDate().toString();
             item.unitPrice = String.valueOf(transaction.getUnitPrice());
             item.area = String.valueOf(transaction.getArea());
             item.transactionType = transaction.getTransactionType();
-            item.amountTotal = String.valueOf(transaction.calculateAmount());
+            item.amountTotal = df.format(transaction.calculateAmount());
+            item.landType = transaction instanceof LandTransaction ? ((LandTransaction) transaction).getLandType() : null;
+            item.houseType = transaction instanceof HouseTransaction ? ((HouseTransaction) transaction).getHouseType() : null;
+            item.address = transaction instanceof HouseTransaction ? ((HouseTransaction) transaction).getAddress() : null;
             itemList.add(item);
         }
-
         return itemList;
     }
 }
